@@ -18,7 +18,7 @@ public class PaymentReconciliationService {
     private final List<ReconciliationRule> rules;
 
     public PaymentReconciliationService(List<ReconciliationRule> rules) {
-        this.rules = List.copyOf(rules);
+        this.rules = rules;
     }
 
     public PaymentReconciliationResult reconcile(

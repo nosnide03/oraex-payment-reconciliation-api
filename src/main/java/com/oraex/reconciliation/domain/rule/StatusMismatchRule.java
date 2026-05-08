@@ -25,7 +25,7 @@ public class StatusMismatchRule implements ReconciliationRule {
                                 internal.status().name(),
                                 processor.status().name(),
                                 ReconciliationDifferenceType.STATUS_MISMATCH,
-                                ReconciliationStatus.STATUS_MISMATCH
+                                ReconciliationStatus.RECONCILED_WITH_DIFFERENCES
                         )));
     }
 }

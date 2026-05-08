@@ -70,7 +70,7 @@ class PaymentReconciliationServiceTest {
         PaymentReconciliationResult result = service.reconcile("PAY-1004", internal, processor);
 
         assertThat(result.reconciled()).isFalse();
-        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.AMOUNT_MISMATCH);
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
         assertThat(result.differences()).extracting(ReconciliationDifference::type)
                 .containsExactly(ReconciliationDifferenceType.AMOUNT_MISMATCH);
     }
@@ -82,7 +82,7 @@ class PaymentReconciliationServiceTest {
 
         PaymentReconciliationResult result = service.reconcile("PAY-1005", internal, processor);
 
-        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.CURRENCY_MISMATCH);
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
     }
 
     @Test
@@ -92,7 +92,7 @@ class PaymentReconciliationServiceTest {
 
         PaymentReconciliationResult result = service.reconcile("PAY-1006", internal, processor);
 
-        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.STATUS_MISMATCH);
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
     }
 
     @Test

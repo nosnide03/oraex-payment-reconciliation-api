@@ -26,7 +26,7 @@ public class ExternalReferenceMismatchRule implements ReconciliationRule {
                                 String.valueOf(internal.externalReference()),
                                 processor.externalReference(),
                                 ReconciliationDifferenceType.REFERENCE_MISMATCH,
-                                ReconciliationStatus.REFERENCE_MISMATCH
+                                ReconciliationStatus.RECONCILED_WITH_DIFFERENCES
                         )));
     }
 }

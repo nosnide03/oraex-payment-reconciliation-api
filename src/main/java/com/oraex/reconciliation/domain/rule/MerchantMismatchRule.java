@@ -26,7 +26,7 @@ public class MerchantMismatchRule implements ReconciliationRule {
                                 internal.merchantId(),
                                 processor.merchantId(),
                                 ReconciliationDifferenceType.MERCHANT_MISMATCH,
-                                ReconciliationStatus.MERCHANT_MISMATCH
+                                ReconciliationStatus.RECONCILED_WITH_DIFFERENCES
                         )));
     }
 }

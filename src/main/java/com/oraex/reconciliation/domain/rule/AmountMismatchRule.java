@@ -25,7 +25,7 @@ public class AmountMismatchRule implements ReconciliationRule {
                                 internal.amount().toPlainString(),
                                 processor.amount().toPlainString(),
                                 ReconciliationDifferenceType.AMOUNT_MISMATCH,
-                                ReconciliationStatus.AMOUNT_MISMATCH
+                                ReconciliationStatus.RECONCILED_WITH_DIFFERENCES
                         )));
     }
 }

@@ -26,7 +26,7 @@ public class CurrencyMismatchRule implements ReconciliationRule {
                                 internal.currency(),
                                 processor.currency(),
                                 ReconciliationDifferenceType.CURRENCY_MISMATCH,
-                                ReconciliationStatus.CURRENCY_MISMATCH
+                                ReconciliationStatus.RECONCILED_WITH_DIFFERENCES
                         )));
     }
 }

@@ -29,25 +29,10 @@ public record PaymentReconciliationResult(
     }
 
     private static ReconciliationStatus resolveStatus(List<ReconciliationDifference> differences) {
-        if (differences.isEmpty()) {
-            return ReconciliationStatus.RECONCILED;
-        }
-
-        if (differences.size() == 1) {
-            return differences.get(0).resultingStatus();
-        }
-
-        boolean containsOnlySourceAvailabilityDifference = differences.stream()
+        return differences.stream()
                 .map(ReconciliationDifference::resultingStatus)
-                .anyMatch(status -> status == ReconciliationStatus.NOT_FOUND
-                        || status == ReconciliationStatus.ONLY_INTERNAL
-                        || status == ReconciliationStatus.ONLY_PROCESSOR);
-
-        if (containsOnlySourceAvailabilityDifference) {
-            return differences.get(0).resultingStatus();
-        }
-
-        return ReconciliationStatus.MULTIPLE_MISMATCHES;
+                .findFirst()
+                .orElse(ReconciliationStatus.RECONCILED);
     }
 
     private static String resolveMerchantId(ReconciliationContext context) {

@@ -32,7 +32,7 @@ class ReconciliationControllerTest {
         mockMvc.perform(get("/api/v1/reconciliations/payments/PAY-1004"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reconciled", is(false)))
-                .andExpect(jsonPath("$.reconciliationStatus", is("AMOUNT_MISMATCH")));
+                .andExpect(jsonPath("$.reconciliationStatus", is("RECONCILED_WITH_DIFFERENCES")));
     }
 
     @Test
