@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Payment Reconciliation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Reconciled payment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1001",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reconciliations", "payments", "PAY-1001"]
+        }
+      }
+    },
+    {
+      "name": "Only internal",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1002",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reconciliations", "payments", "PAY-1002"]
+        }
+      }
+    },
+    {
+      "name": "Only processor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1003",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reconciliations", "payments", "PAY-1003"]
+        }
+      }
+    },
+    {
+      "name": "Amount mismatch",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1004",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reconciliations", "payments", "PAY-1004"]
+        }
+      }
+    },
+    {
+      "name": "Search unreconciled payments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciled=false",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reconciliations", "payments"],
+          "query": [{ "key": "reconciled", "value": "false" }]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
