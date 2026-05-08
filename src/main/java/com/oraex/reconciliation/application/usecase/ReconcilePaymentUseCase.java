@@ -15,18 +15,19 @@ public class ReconcilePaymentUseCase {
 
     public ReconcilePaymentUseCase(
             InternalPaymentRecordPort internalPaymentRecordPort,
-            ProcessorPaymentRecordPort processorPaymentRecordPort
+            ProcessorPaymentRecordPort processorPaymentRecordPort,
+            PaymentReconciliationService reconciliationService
     ) {
         this.internalPaymentRecordPort = internalPaymentRecordPort;
         this.processorPaymentRecordPort = processorPaymentRecordPort;
-        this.reconciliationService = new PaymentReconciliationService();
+        this.reconciliationService = reconciliationService;
     }
 
     public PaymentReconciliationResult execute(String paymentId) {
         return reconciliationService.reconcile(
                 paymentId,
-                internalPaymentRecordPort.findByPaymentId(paymentId),
-                processorPaymentRecordPort.findByPaymentId(paymentId)
+                internalPaymentRecordPort.findByPaymentId(paymentId).orElse(null),
+                processorPaymentRecordPort.findByPaymentId(paymentId).orElse(null)
         );
     }
 }

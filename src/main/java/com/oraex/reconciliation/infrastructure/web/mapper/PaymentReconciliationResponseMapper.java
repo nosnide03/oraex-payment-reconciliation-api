@@ -27,8 +27,18 @@ public class PaymentReconciliationResponseMapper {
                                 difference.type()
                         ))
                         .toList(),
-                result.message()
+                resolveMessage(result.reconciliationStatus())
         );
+    }
+
+    private String resolveMessage(com.oraex.reconciliation.domain.model.ReconciliationStatus status) {
+        return switch (status) {
+            case RECONCILED -> "Payment is reconciled successfully";
+            case NOT_FOUND -> "Payment was not found in internal records or processor records";
+            case ONLY_INTERNAL -> "Payment exists internally but was not reported by the processor";
+            case ONLY_PROCESSOR -> "Payment was reported by the processor but does not exist internally";
+            default -> "Payment exists in both sources but contains reconciliation differences";
+        };
     }
 
     private PaymentRecordResponse toInternalResponse(InternalPaymentRecord record) {
