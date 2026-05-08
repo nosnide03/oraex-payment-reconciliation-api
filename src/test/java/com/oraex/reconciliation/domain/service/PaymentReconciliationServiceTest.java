@@ -1,14 +1,7 @@
 package com.oraex.reconciliation.domain.service;
 
 import com.oraex.reconciliation.domain.model.*;
-import com.oraex.reconciliation.domain.rule.AmountMismatchRule;
-import com.oraex.reconciliation.domain.rule.CurrencyMismatchRule;
-import com.oraex.reconciliation.domain.rule.ExternalReferenceMismatchRule;
-import com.oraex.reconciliation.domain.rule.InternalRecordMissingRule;
-import com.oraex.reconciliation.domain.rule.MerchantMismatchRule;
-import com.oraex.reconciliation.domain.rule.NotFoundRule;
-import com.oraex.reconciliation.domain.rule.ProcessorRecordMissingRule;
-import com.oraex.reconciliation.domain.rule.StatusMismatchRule;
+import com.oraex.reconciliation.domain.rule.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
