@@ -4,5 +4,6 @@ public record ReconciliationDifference(
         String field,
         String internalValue,
         String processorValue,
-        ReconciliationDifferenceType type
+        ReconciliationDifferenceType type,
+        ReconciliationStatus resultingStatus
 ) {}

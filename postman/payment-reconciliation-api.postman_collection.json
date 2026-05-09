@@ -1,69 +1,722 @@
 {
   "info": {
+    "_postman_id": "5a52a00a-df86-4604-9b0a-5106ce54ca88",
     "name": "Payment Reconciliation API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection aligned with controlled ReconciliationStatus and ReconciliationDifferenceType model."
   },
   "item": [
     {
-      "name": "Reconciled payment",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1001",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "reconciliations", "payments", "PAY-1001"]
+      "name": "Reconcile by paymentId",
+      "item": [
+        {
+          "name": "Get reconciled payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1001"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1001', function () { pm.expect(json.paymentId).to.eql('PAY-1001'); });",
+                  "pm.test('reconciliationStatus is RECONCILED', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED'); });",
+                  "pm.test('reconciled is true', function () { pm.expect(json.reconciled).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get only internal payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1002",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1002"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1002', function () { pm.expect(json.paymentId).to.eql('PAY-1002'); });",
+                  "pm.test('reconciliationStatus is ONLY_INTERNAL', function () { pm.expect(json.reconciliationStatus).to.eql('ONLY_INTERNAL'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type ONLY_INTERNAL', function () { pm.expect(json.differences.map(d => d.type)).to.include('ONLY_INTERNAL'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get only processor payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1003",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1003"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1003', function () { pm.expect(json.paymentId).to.eql('PAY-1003'); });",
+                  "pm.test('reconciliationStatus is ONLY_PROCESSOR', function () { pm.expect(json.reconciliationStatus).to.eql('ONLY_PROCESSOR'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type ONLY_PROCESSOR', function () { pm.expect(json.differences.map(d => d.type)).to.include('ONLY_PROCESSOR'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get amount mismatch payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1004",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1004"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1004', function () { pm.expect(json.paymentId).to.eql('PAY-1004'); });",
+                  "pm.test('reconciliationStatus is RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED_WITH_DIFFERENCES'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type AMOUNT_MISMATCH', function () { pm.expect(json.differences.map(d => d.type)).to.include('AMOUNT_MISMATCH'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get currency mismatch payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1005",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1005"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1005', function () { pm.expect(json.paymentId).to.eql('PAY-1005'); });",
+                  "pm.test('reconciliationStatus is RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED_WITH_DIFFERENCES'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type CURRENCY_MISMATCH', function () { pm.expect(json.differences.map(d => d.type)).to.include('CURRENCY_MISMATCH'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get status mismatch payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1006",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1006"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1006', function () { pm.expect(json.paymentId).to.eql('PAY-1006'); });",
+                  "pm.test('reconciliationStatus is RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED_WITH_DIFFERENCES'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type STATUS_MISMATCH', function () { pm.expect(json.differences.map(d => d.type)).to.include('STATUS_MISMATCH'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get merchant mismatch payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1007",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1007"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1007', function () { pm.expect(json.paymentId).to.eql('PAY-1007'); });",
+                  "pm.test('reconciliationStatus is RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED_WITH_DIFFERENCES'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type MERCHANT_MISMATCH', function () { pm.expect(json.differences.map(d => d.type)).to.include('MERCHANT_MISMATCH'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get reference mismatch payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1008",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-1008"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-1008', function () { pm.expect(json.paymentId).to.eql('PAY-1008'); });",
+                  "pm.test('reconciliationStatus is RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.reconciliationStatus).to.eql('RECONCILED_WITH_DIFFERENCES'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type REFERENCE_MISMATCH', function () { pm.expect(json.differences.map(d => d.type)).to.include('REFERENCE_MISMATCH'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get not found payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments",
+                "PAY-9999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('paymentId is PAY-9999', function () { pm.expect(json.paymentId).to.eql('PAY-9999'); });",
+                  "pm.test('reconciliationStatus is NOT_FOUND', function () { pm.expect(json.reconciliationStatus).to.eql('NOT_FOUND'); });",
+                  "pm.test('reconciled is false', function () { pm.expect(json.reconciled).to.eql(false); });",
+                  "pm.test('contains difference type NOT_FOUND', function () { pm.expect(json.differences.map(d => d.type)).to.include('NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
         }
-      }
+      ]
     },
     {
-      "name": "Only internal",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1002",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "reconciliations", "payments", "PAY-1002"]
+      "name": "Search reconciliations",
+      "item": [
+        {
+          "name": "Search all payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('response is an array', function () { pm.expect(json).to.be.an('array'); });",
+                  "pm.test('contains sample payments', function () { pm.expect(json.map(item => item.paymentId)).to.include.members(['PAY-1001', 'PAY-1008']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search unreconciled payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciled=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciled",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results are unreconciled', function () { pm.expect(json.every(item => item.reconciled === false)).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search reconciled payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciled=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciled",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results are reconciled', function () { pm.expect(json.every(item => item.reconciled === true)).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by status RECONCILED",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciliationStatus=RECONCILED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciliationStatus",
+                  "value": "RECONCILED"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results have status RECONCILED', function () { pm.expect(json.every(item => item.reconciliationStatus === 'RECONCILED')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by status ONLY_INTERNAL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciliationStatus=ONLY_INTERNAL",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciliationStatus",
+                  "value": "ONLY_INTERNAL"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results have status ONLY_INTERNAL', function () { pm.expect(json.every(item => item.reconciliationStatus === 'ONLY_INTERNAL')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by status ONLY_PROCESSOR",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciliationStatus=ONLY_PROCESSOR",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciliationStatus",
+                  "value": "ONLY_PROCESSOR"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results have status ONLY_PROCESSOR', function () { pm.expect(json.every(item => item.reconciliationStatus === 'ONLY_PROCESSOR')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by status NOT_FOUND",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciliationStatus=NOT_FOUND",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciliationStatus",
+                  "value": "NOT_FOUND"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results have status NOT_FOUND', function () { pm.expect(json.every(item => item.reconciliationStatus === 'NOT_FOUND')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by status RECONCILED_WITH_DIFFERENCES",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciliationStatus=RECONCILED_WITH_DIFFERENCES",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "reconciliationStatus",
+                  "value": "RECONCILED_WITH_DIFFERENCES"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results have status RECONCILED_WITH_DIFFERENCES', function () { pm.expect(json.every(item => item.reconciliationStatus === 'RECONCILED_WITH_DIFFERENCES')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by merchant MERCHANT-001",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?merchantId=MERCHANT-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "merchantId",
+                  "value": "MERCHANT-001"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results belong to merchant MERCHANT-001', function () { pm.expect(json.every(item => item.merchantId === 'MERCHANT-001')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search by merchant and status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reconciliations/payments?merchantId=MERCHANT-001&reconciliationStatus=RECONCILED_WITH_DIFFERENCES",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reconciliations",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "merchantId",
+                  "value": "MERCHANT-001"
+                },
+                {
+                  "key": "reconciliationStatus",
+                  "value": "RECONCILED_WITH_DIFFERENCES"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('all results match merchant and status', function () { pm.expect(json.every(item => item.merchantId === 'MERCHANT-001' && item.reconciliationStatus === 'RECONCILED_WITH_DIFFERENCES')).to.eql(true); });"
+                ]
+              }
+            }
+          ]
         }
-      }
-    },
-    {
-      "name": "Only processor",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1003",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "reconciliations", "payments", "PAY-1003"]
-        }
-      }
-    },
-    {
-      "name": "Amount mismatch",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/reconciliations/payments/PAY-1004",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "reconciliations", "payments", "PAY-1004"]
-        }
-      }
-    },
-    {
-      "name": "Search unreconciled payments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/reconciliations/payments?reconciled=false",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "reconciliations", "payments"],
-          "query": [{ "key": "reconciled", "value": "false" }]
-        }
-      }
+      ]
     }
   ],
   "variable": [
