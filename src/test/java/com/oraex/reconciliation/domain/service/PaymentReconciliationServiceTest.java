@@ -1,7 +1,20 @@
 package com.oraex.reconciliation.domain.service;
 
-import com.oraex.reconciliation.domain.model.*;
-import com.oraex.reconciliation.domain.rule.*;
+import com.oraex.reconciliation.domain.model.InternalPaymentRecord;
+import com.oraex.reconciliation.domain.model.PaymentReconciliationResult;
+import com.oraex.reconciliation.domain.model.PaymentStatus;
+import com.oraex.reconciliation.domain.model.ProcessorPaymentRecord;
+import com.oraex.reconciliation.domain.model.ReconciliationDifference;
+import com.oraex.reconciliation.domain.model.ReconciliationDifferenceType;
+import com.oraex.reconciliation.domain.model.ReconciliationStatus;
+import com.oraex.reconciliation.domain.rule.AmountMismatchRule;
+import com.oraex.reconciliation.domain.rule.CurrencyMismatchRule;
+import com.oraex.reconciliation.domain.rule.ExternalReferenceMismatchRule;
+import com.oraex.reconciliation.domain.rule.InternalRecordMissingRule;
+import com.oraex.reconciliation.domain.rule.MerchantMismatchRule;
+import com.oraex.reconciliation.domain.rule.NotFoundRule;
+import com.oraex.reconciliation.domain.rule.ProcessorRecordMissingRule;
+import com.oraex.reconciliation.domain.rule.StatusMismatchRule;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -43,6 +56,8 @@ class PaymentReconciliationServiceTest {
 
         assertThat(result.reconciled()).isFalse();
         assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.ONLY_INTERNAL);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.ONLY_INTERNAL);
     }
 
     @Test
@@ -53,6 +68,18 @@ class PaymentReconciliationServiceTest {
 
         assertThat(result.reconciled()).isFalse();
         assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.ONLY_PROCESSOR);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.ONLY_PROCESSOR);
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenPaymentDoesNotExistInAnySource() {
+        PaymentReconciliationResult result = service.reconcile("PAY-9999", null, null);
+
+        assertThat(result.reconciled()).isFalse();
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.NOT_FOUND);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.NOT_FOUND);
     }
 
     @Test
@@ -75,7 +102,10 @@ class PaymentReconciliationServiceTest {
 
         PaymentReconciliationResult result = service.reconcile("PAY-1005", internal, processor);
 
+        assertThat(result.reconciled()).isFalse();
         assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.CURRENCY_MISMATCH);
     }
 
     @Test
@@ -85,15 +115,55 @@ class PaymentReconciliationServiceTest {
 
         PaymentReconciliationResult result = service.reconcile("PAY-1006", internal, processor);
 
+        assertThat(result.reconciled()).isFalse();
         assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.STATUS_MISMATCH);
     }
 
     @Test
-    void shouldReturnNotFoundWhenPaymentDoesNotExistInAnySource() {
-        PaymentReconciliationResult result = service.reconcile("PAY-9999", null, null);
+    void shouldReturnMerchantMismatchWhenMerchantsAreDifferent() {
+        InternalPaymentRecord internal = internal("PAY-1007", "MERCHANT-001", "EXT-9007", "30.00", "USD", PaymentStatus.PAID);
+        ProcessorPaymentRecord processor = processor("PAY-1007", "MERCHANT-999", "EXT-9007", "30.00", "USD", PaymentStatus.PAID);
+
+        PaymentReconciliationResult result = service.reconcile("PAY-1007", internal, processor);
 
         assertThat(result.reconciled()).isFalse();
-        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.NOT_FOUND);
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.MERCHANT_MISMATCH);
+    }
+
+    @Test
+    void shouldReturnReferenceMismatchWhenExternalReferencesAreDifferent() {
+        InternalPaymentRecord internal = internal("PAY-1008", "MERCHANT-001", "EXT-9008", "40.00", "USD", PaymentStatus.PAID);
+        ProcessorPaymentRecord processor = processor("PAY-1008", "MERCHANT-001", "EXT-9999", "40.00", "USD", PaymentStatus.PAID);
+
+        PaymentReconciliationResult result = service.reconcile("PAY-1008", internal, processor);
+
+        assertThat(result.reconciled()).isFalse();
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(ReconciliationDifferenceType.REFERENCE_MISMATCH);
+    }
+
+    @Test
+    void shouldReturnMultipleDifferencesOrderedByRulePriority() {
+        InternalPaymentRecord internal = internal("PAY-2001", "MERCHANT-001", "EXT-2001", "50.00", "USD", PaymentStatus.PAID);
+        ProcessorPaymentRecord processor = processor("PAY-2001", "MERCHANT-999", "EXT-9999", "49.99", "EUR", PaymentStatus.REVERSED);
+
+        PaymentReconciliationResult result = service.reconcile("PAY-2001", internal, processor);
+
+        assertThat(result.reconciled()).isFalse();
+        assertThat(result.reconciliationStatus()).isEqualTo(ReconciliationStatus.RECONCILED_WITH_DIFFERENCES);
+        assertThat(result.differences()).extracting(ReconciliationDifference::type)
+                .containsExactly(
+                        ReconciliationDifferenceType.MERCHANT_MISMATCH,
+                        ReconciliationDifferenceType.REFERENCE_MISMATCH,
+                        ReconciliationDifferenceType.AMOUNT_MISMATCH,
+                        ReconciliationDifferenceType.CURRENCY_MISMATCH,
+                        ReconciliationDifferenceType.STATUS_MISMATCH
+                );
     }
 
     private InternalPaymentRecord internal(String paymentId, String merchantId, String externalReference, String amount, String currency, PaymentStatus status) {
